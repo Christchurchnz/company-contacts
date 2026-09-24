@@ -1,5 +1,509 @@
-const SUPABASE_URL =
-    "https://luhagrwwkpenxccffpwf.supabase.co/";
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const SUPABASE_KEY =
-    "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
+    <title>CHRISTCH - Company Contacts</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* LOGIN */
+
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 11px 16px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .login-button {
+            width: 100%;
+            background: #1f6feb;
+            color: white;
+        }
+
+        .login-button:hover {
+            background: #1558b0;
+        }
+
+        #loginError {
+            color: #c62828;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* MAIN APP */
+
+        #app {
+            display: none;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            color: #666;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .change-password {
+            background: #555;
+            color: white;
+        }
+
+        .logout {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .contact-name {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .contact-detail {
+            margin: 5px 0;
+            color: #555;
+            word-break: break-word;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .call-button {
+            background: #2e7d32;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+        }
+
+        .email-button {
+            background: #1565c0;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        #noResults {
+            display: none;
+            text-align: center;
+            color: #666;
+            padding: 30px;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .save-password {
+            background: #1f6feb;
+            color: white;
+            flex: 1;
+        }
+
+        .cancel-button {
+            background: #777;
+            color: white;
+            flex: 1;
+        }
+
+        #passwordMessage {
+            margin-top: 12px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-buttons {
+                width: 100%;
+            }
+
+            .header-buttons button {
+                flex: 1;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .contact-actions {
+                flex-direction: column;
+            }
+
+            .call-button,
+            .email-button {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div id="loginScreen">
+
+    <div class="login-box">
+
+        <h1>CHRISTCH</h1>
+
+        <p>Company Contacts</p>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Company email"
+            autocomplete="username"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <button class="login-button" onclick="login()">
+            Login
+        </button>
+
+        <div id="loginError"></div>
+
+    </div>
+
+</div>
+
+
+<!-- MAIN APPLICATION -->
+
+<div id="app">
+
+    <div class="container">
+
+        <div class="header">
+
+            <div class="header-top">
+
+                <div>
+                    <h1>CHRISTCH - Company Contacts</h1>
+                    <p id="loggedInUser"></p>
+                </div>
+
+                <div class="header-buttons">
+
+                    <button
+                        class="change-password"
+                        onclick="openPasswordModal()"
+                    >
+                        Change Password
+                    </button>
+
+                    <button
+                        class="logout"
+                        onclick="logout()"
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="search"
+                placeholder="Search contacts..."
+                oninput="searchContacts()"
+            >
+
+        </div>
+
+
+        <div id="loading">
+            Loading contacts...
+        </div>
+
+        <div id="contacts"></div>
+
+        <div id="noResults">
+            No contacts found.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CHANGE PASSWORD MODAL -->
+
+<div id="passwordModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Change Password</h2>
+
+        <input
+            type="password"
+            id="newPassword"
+            placeholder="New password"
+            autocomplete="new-password"
+        >
+
+        <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm new password"
+            autocomplete="new-password"
+        >
+
+        <div class="modal-buttons">
+
+            <button
+                class="save-password"
+                onclick="changePassword()"
+            >
+                Change Password
+            </button>
+
+            <button
+                class="cancel-button"
+                onclick="closePasswordModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+        <div id="passwordMessage"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+     * SUPABASE CONFIGURATION
+     *
+     * IMPORTANT:
+     * Use your Supabase PUBLISHABLE key here.
+     *
+     * NEVER put your Supabase Secret / service_role key here.
+     */
+
+    const SUPABASE_URL =
+        "https://luhagrwwkpenxccffpwf.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
+
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    let allContacts = [];
+
+
+    // --------------------------------------------------
+    // CHECK LOGIN
+    // --------------------------------------------------
+
+    async function checkLogin() {
+
+        const {
+            data: {
+                session
+            }
+        } = await supabaseClient.auth.getSession();
+
+
+        if (session) {
+
+            showApp(session);
+
+        } else {
+
+            showLogin();
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // LOGIN
+    // --------------------------------------------------
+
+    async function login() {
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+
+        const errorElement =
+            document.getElementById("loginError");
+
+
+        errorElement.textContent = "";
+
+
+        if (!email || !password) {
+
+            errorElement.textContent =
+                "Please enter your email and pass
+```
+
