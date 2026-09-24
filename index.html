@@ -1,10 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CHRISTCHURCHNZ - Company Contacts</title>
+    <title>CHRISTCH - Company Contacts</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -22,11 +22,9 @@
 
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: auto;
             padding: 20px;
         }
-
-        /* LOGIN */
 
         #loginScreen {
             min-height: 100vh;
@@ -45,13 +43,16 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .login-box h1 {
+        h1 {
+            margin-top: 0;
+        }
+
+        .login-box h1,
+        .login-box p {
             text-align: center;
-            margin-bottom: 5px;
         }
 
         .login-box p {
-            text-align: center;
             color: #666;
             margin-bottom: 25px;
         }
@@ -79,17 +80,11 @@
             color: white;
         }
 
-        .login-button:hover {
-            background: #1558b0;
-        }
-
         #loginError {
             color: #c62828;
-            margin-top: 15px;
             text-align: center;
+            margin-top: 15px;
         }
-
-        /* MAIN APP */
 
         #app {
             display: none;
@@ -194,8 +189,6 @@
             padding: 30px;
         }
 
-        /* MODAL */
-
         .modal {
             display: none;
             position: fixed;
@@ -214,10 +207,6 @@
             margin: 100px auto;
             padding: 25px;
             border-radius: 12px;
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
         }
 
         .modal-buttons {
@@ -240,8 +229,6 @@
         #passwordMessage {
             margin-top: 12px;
         }
-
-        /* MOBILE */
 
         @media (max-width: 600px) {
             .container {
@@ -279,13 +266,11 @@
 
 <body>
 
-<!-- LOGIN SCREEN -->
-
 <div id="loginScreen">
 
     <div class="login-box">
 
-        <h1>ChristchurchNz</h1>
+        <h1>CHRISTCH</h1>
 
         <p>Company Contacts</p>
 
@@ -314,8 +299,6 @@
 </div>
 
 
-<!-- MAIN APPLICATION -->
-
 <div id="app">
 
     <div class="container">
@@ -325,7 +308,7 @@
             <div class="header-top">
 
                 <div>
-                    <h1>ChristchurchNz - Company Contacts</h1>
+                    <h1>CHRISTCH - Company Contacts</h1>
                     <p id="loggedInUser"></p>
                 </div>
 
@@ -333,15 +316,13 @@
 
                     <button
                         class="change-password"
-                        onclick="openPasswordModal()"
-                    >
+                        onclick="openPasswordModal()">
                         Change Password
                     </button>
 
                     <button
                         class="logout"
-                        onclick="logout()"
-                    >
+                        onclick="logout()">
                         Logout
                     </button>
 
@@ -351,18 +332,15 @@
 
         </div>
 
-
         <div class="search-box">
 
             <input
                 type="text"
                 id="search"
                 placeholder="Search contacts..."
-                oninput="searchContacts()"
-            >
+                oninput="searchContacts()">
 
         </div>
-
 
         <div id="loading">
             Loading contacts...
@@ -379,8 +357,6 @@
 </div>
 
 
-<!-- CHANGE PASSWORD MODAL -->
-
 <div id="passwordModal" class="modal">
 
     <div class="modal-content">
@@ -391,29 +367,25 @@
             type="password"
             id="newPassword"
             placeholder="New password"
-            autocomplete="new-password"
-        >
+            autocomplete="new-password">
 
         <input
             type="password"
             id="confirmPassword"
             placeholder="Confirm new password"
-            autocomplete="new-password"
-        >
+            autocomplete="new-password">
 
         <div class="modal-buttons">
 
             <button
                 class="save-password"
-                onclick="changePassword()"
-            >
+                onclick="changePassword()">
                 Change Password
             </button>
 
             <button
                 class="cancel-button"
-                onclick="closePasswordModal()"
-            >
+                onclick="closePasswordModal()">
                 Cancel
             </button>
 
@@ -428,81 +400,370 @@
 
 <script>
 
-    /*
-     * SUPABASE CONFIGURATION
-     *
-     * IMPORTANT:
-     * Use your Supabase PUBLISHABLE key here.
-     *
-     * NEVER put your Supabase Secret / service_role key here.
-     */
+const SUPABASE_URL =
+    "https://luhagrwwkpenxccffpwf.supabase.co";
 
-    const SUPABASE_URL =
-        "https://luhagrwwkpenxccffpwf.supabase.co";
-
-    const SUPABASE_KEY =
-        "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
+const SUPABASE_KEY =
+    "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
 
 
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-    let allContacts = [];
+let allContacts = [];
 
 
-    // --------------------------------------------------
-    // CHECK LOGIN
-    // --------------------------------------------------
+async function checkLogin() {
 
-    async function checkLogin() {
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
-        const {
-            data: {
-                session
-            }
-        } = await supabaseClient.auth.getSession();
+    if (session) {
+        showApp(session);
+    } else {
+        showLogin();
+    }
+}
 
 
-        if (session) {
+async function login() {
 
-            showApp(session);
+    const email =
+        document.getElementById("email").value.trim();
 
-        } else {
+    const password =
+        document.getElementById("password").value;
 
-            showLogin();
+    const errorElement =
+        document.getElementById("loginError");
 
-        }
+    errorElement.textContent = "";
 
+    if (!email || !password) {
+
+        errorElement.textContent =
+            "Please enter your email and password.";
+
+        return;
     }
 
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
 
-    // --------------------------------------------------
-    // LOGIN
-    // --------------------------------------------------
+    if (error) {
 
-    async function login() {
+        errorElement.textContent =
+            error.message;
+
+        return;
+    }
+
+    showApp(data.session);
+}
+
+
+function showApp(session) {
+
+    document.getElementById("loginScreen").style.display =
+        "none";
+
+    document.getElementById("app").style.display =
+        "block";
+
+    document.getElementById("loggedInUser").textContent =
+        "Logged in as: " + session.user.email;
+
+    loadContacts();
+}
+
+
+function showLogin() {
+
+    document.getElementById("loginScreen").style.display =
+        "flex";
+
+    document.getElementById("app").style.display =
+        "none";
+}
+
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    allContacts = [];
+
+    document.getElementById("contacts").innerHTML = "";
+
+    showLogin();
+}
+
+
+async function loadContacts() {
+
+    const loading =
+        document.getElementById("loading");
+
+    const contactsDiv =
+        document.getElementById("contacts");
+
+    loading.style.display = "block";
+
+    contactsDiv.innerHTML = "";
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("contacts")
+        .select("*")
+        .order("name", { ascending: true });
+
+    loading.style.display = "none";
+
+    if (error) {
+
+        console.error(error);
+
+        contactsDiv.innerHTML =
+            "<p>Unable to load contacts. Please contact IT support.</p>";
+
+        return;
+    }
+
+    allContacts = data || [];
+
+    displayContacts(allContacts);
+}
+
+
+function displayContacts(contacts) {
+
+    const contactsDiv =
+        document.getElementById("contacts");
+
+    const noResults =
+        document.getElementById("noResults");
+
+    contactsDiv.innerHTML = "";
+
+    if (contacts.length === 0) {
+
+        noResults.style.display = "block";
+
+        return;
+    }
+
+    noResults.style.display = "none";
+
+    contacts.forEach(contact => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "contact-card";
+
+        const name =
+            escapeHtml(contact.name || "");
+
+        const phone =
+            escapeHtml(contact.phone || "");
 
         const email =
-            document.getElementById("email").value.trim();
+            escapeHtml(contact.email || "");
 
-        const password =
-            document.getElementById("password").value;
+        let phoneButton = "";
+
+        if (contact.phone) {
+
+            phoneButton = `
+                <a
+                    class="call-button"
+                    href="tel:${contact.phone}">
+                    📞 Call
+                </a>
+            `;
+        }
+
+        let emailButton = "";
+
+        if (contact.email) {
+
+            emailButton = `
+                <a
+                    class="email-button"
+                    href="mailto:${contact.email}">
+                    ✉ Email
+                </a>
+            `;
+        }
+
+        card.innerHTML = `
+
+            <div class="contact-name">
+                ${name}
+            </div>
+
+            <div class="contact-detail">
+                📞 ${phone || "No phone number"}
+            </div>
+
+            <div class="contact-detail">
+                ✉ ${email || "No email address"}
+            </div>
+
+            <div class="contact-actions">
+                ${phoneButton}
+                ${emailButton}
+            </div>
+
+        `;
+
+        contactsDiv.appendChild(card);
+
+    });
+}
 
 
-        const errorElement =
-            document.getElementById("loginError");
+function searchContacts() {
+
+    const search =
+        document
+            .getElementById("search")
+            .value
+            .toLowerCase()
+            .trim();
+
+    if (!search) {
+
+        displayContacts(allContacts);
+
+        return;
+    }
+
+    const filtered =
+        allContacts.filter(contact => {
+
+            const name =
+                (contact.name || "").toLowerCase();
+
+            const phone =
+                (contact.phone || "").toLowerCase();
+
+            const email =
+                (contact.email || "").toLowerCase();
+
+            return (
+                name.includes(search) ||
+                phone.includes(search) ||
+                email.includes(search)
+            );
+
+        });
+
+    displayContacts(filtered);
+}
 
 
-        errorElement.textContent = "";
+function openPasswordModal() {
+
+    document.getElementById("passwordModal").style.display =
+        "block";
+
+    document.getElementById("passwordMessage").textContent =
+        "";
+
+    document.getElementById("newPassword").value = "";
+
+    document.getElementById("confirmPassword").value = "";
+}
 
 
-        if (!email || !password) {
+function closePasswordModal() {
 
-            errorElement.textContent =
-                "Please enter your email and pass
+    document.getElementById("passwordModal").style.display =
+        "none";
+}
+
+
+async function changePassword() {
+
+    const newPassword =
+        document.getElementById("newPassword").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const message =
+        document.getElementById("passwordMessage");
+
+    message.textContent = "";
+
+    if (newPassword.length < 8) {
+
+        message.textContent =
+            "Password must be at least 8 characters.";
+
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+
+        message.textContent =
+            "Passwords do not match.";
+
+        return;
+    }
+
+    const {
+        error
+    } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+
+    if (error) {
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+    message.textContent =
+        "Password changed successfully.";
+
+    setTimeout(() => {
+        closePasswordModal();
+    }, 1500);
+}
+
+
+function escapeHtml(value) {
+
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+checkLogin();
+
+</script>
+
+</body>
+</html>
 ```
-
