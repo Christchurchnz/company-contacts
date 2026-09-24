@@ -585,7 +585,7 @@
             data,
             error
         } = await supabaseClient
-            .from("Contacts")
+            .from("contacts")
             .select("id, created_at, name, phone, email")
             .order("name", {
                 ascending: true
