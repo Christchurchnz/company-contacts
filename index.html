@@ -471,5 +471,454 @@
 
     /* ==========================================
        SHOW LOGIN
-       =============================
+       ========================================== */
+
+    function showLogin() {
+
+        document.getElementById("loginScreen").style.display = "flex";
+
+        document.getElementById("app").style.display = "none";
+
+    }
+
+
+    /* ==========================================
+       SHOW APPLICATION
+       ========================================== */
+
+    function showApp() {
+
+        document.getElementById("loginScreen").style.display = "none";
+
+        document.getElementById("app").style.display = "block";
+
+    }
+
+
+    /* ==========================================
+       LOGIN
+       ========================================== */
+
+    async function login() {
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        const errorBox =
+            document.getElementById("loginError");
+
+        errorBox.textContent = "";
+
+
+        if (!email || !password) {
+
+            errorBox.textContent =
+                "Please enter your email and password.";
+
+            return;
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+        if (error) {
+
+            console.error("Login error:", error);
+
+            errorBox.textContent =
+                error.message;
+
+            return;
+
+        }
+
+
+        if (data.session) {
+
+            showApp();
+
+            loadContacts();
+
+        }
+
+    }
+
+
+    /* ==========================================
+       LOAD CONTACTS
+       ========================================== */
+
+    async function loadContacts() {
+
+        const contactsList =
+            document.getElementById("contactsList");
+
+
+        contactsList.innerHTML =
+            '<div class="loading">Loading contacts...</div>';
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("Contacts")
+            .select("id, created_at, Name, Phone, Email")
+            .order("Name", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(
+                "CONTACT LOAD ERROR:",
+                error
+            );
+
+            contactsList.innerHTML =
+                `<div class="loading" style="color:red;">
+                    Unable to load contacts.<br><br>
+                    ${escapeHtml(error.message)}
+                </div>`;
+
+            return;
+
+        }
+
+
+        contacts = data || [];
+
+        displayContacts(contacts);
+
+    }
+
+
+    /* ==========================================
+       DISPLAY CONTACTS
+       ========================================== */
+
+    function displayContacts(contactArray) {
+
+        const contactsList =
+            document.getElementById("contactsList");
+
+
+        if (!contactArray.length) {
+
+            contactsList.innerHTML =
+                '<div class="loading">No contacts found.</div>';
+
+            return;
+
+        }
+
+
+        contactsList.innerHTML =
+            contactArray.map(contact => {
+
+                const name =
+                    contact.Name || "";
+
+                const phone =
+                    contact.Phone || "";
+
+                const email =
+                    contact.Email || "";
+
+
+                const safeName =
+                    escapeHtml(name);
+
+                const safePhone =
+                    escapeHtml(phone);
+
+                const safeEmail =
+                    escapeHtml(email);
+
+
+                const phoneLink =
+                    phone.replace(/[^0-9+]/g, "");
+
+
+                return `
+
+                    <div class="contact-card">
+
+                        <h3>
+                            ${safeName}
+                        </h3>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            <a href="tel:${phoneLink}">
+                                ${safePhone}
+                            </a>
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong>
+                            <a href="mailto:${safeEmail}">
+                                ${safeEmail}
+                            </a>
+                        </p>
+
+                        <div class="contact-buttons">
+
+                            <a
+                                class="call-button"
+                                href="tel:${phoneLink}"
+                            >
+                                Call
+                            </a>
+
+                            <a
+                                class="email-button"
+                                href="mailto:${safeEmail}"
+                            >
+                                Email
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("");
+
+    }
+
+
+    /* ==========================================
+       SEARCH CONTACTS
+       ========================================== */
+
+    function searchContacts() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        if (!search) {
+
+            displayContacts(contacts);
+
+            return;
+
+        }
+
+
+        const filtered =
+            contacts.filter(contact => {
+
+                const name =
+                    String(contact.Name || "")
+                        .toLowerCase();
+
+                const phone =
+                    String(contact.Phone || "")
+                        .toLowerCase();
+
+                const email =
+                    String(contact.Email || "")
+                        .toLowerCase();
+
+
+                return (
+                    name.includes(search) ||
+                    phone.includes(search) ||
+                    email.includes(search)
+                );
+
+            });
+
+
+        displayContacts(filtered);
+
+    }
+
+
+    /* ==========================================
+       CHANGE PASSWORD - OPEN
+       ========================================== */
+
+    function openPasswordModal() {
+
+        document.getElementById("passwordModal").style.display =
+            "block";
+
+        document.getElementById("newPassword").value = "";
+
+        document.getElementById("confirmPassword").value = "";
+
+        document.getElementById("passwordMessage").textContent =
+            "";
+
+    }
+
+
+    /* ==========================================
+       CHANGE PASSWORD - CLOSE
+       ========================================== */
+
+    function closePasswordModal() {
+
+        document.getElementById("passwordModal").style.display =
+            "none";
+
+    }
+
+
+    /* ==========================================
+       CHANGE PASSWORD
+       ========================================== */
+
+    async function changePassword() {
+
+        const newPassword =
+            document.getElementById("newPassword").value;
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+        const message =
+            document.getElementById("passwordMessage");
+
+
+        message.style.color = "#d93025";
+
+        message.textContent = "";
+
+
+        if (!newPassword || !confirmPassword) {
+
+            message.textContent =
+                "Please enter the new password twice.";
+
+            return;
+
+        }
+
+
+        if (newPassword.length < 6) {
+
+            message.textContent =
+                "Password must be at least 6 characters.";
+
+            return;
+
+        }
+
+
+        if (newPassword !== confirmPassword) {
+
+            message.textContent =
+                "Passwords do not match.";
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } = await supabaseClient.auth.updateUser({
+
+            password: newPassword
+
+        });
+
+
+        if (error) {
+
+            console.error(
+                "Password change error:",
+                error
+            );
+
+            message.textContent =
+                error.message;
+
+            return;
+
+        }
+
+
+        message.style.color = "#198754";
+
+        message.textContent =
+            "Password changed successfully.";
+
+
+        setTimeout(() => {
+
+            closePasswordModal();
+
+        }, 1500);
+
+    }
+
+
+    /* ==========================================
+       LOGOUT
+       ========================================== */
+
+    async function logout() {
+
+        await supabaseClient.auth.signOut();
+
+        contacts = [];
+
+        document.getElementById("contactsList").innerHTML = "";
+
+        showLogin();
+
+    }
+
+
+    /* ==========================================
+       HTML SECURITY
+       ========================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* ==========================================
+       START APPLICATION
+       ========================================== */
+
+    checkLogin();
+
+</script>
+
+</body>
+</html>
 ```
