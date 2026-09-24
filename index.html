@@ -1,10 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChristchurchNz - Company Contacts</title>
 
+    <title>CHRISTCH - Company Contacts</title>
+
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -25,6 +28,8 @@
             padding: 20px;
         }
 
+        /* LOGIN */
+
         #loginScreen {
             min-height: 100vh;
             display: flex;
@@ -37,28 +42,25 @@
             background: white;
             width: 100%;
             max-width: 400px;
-            padding: 30px;
+            padding: 35px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        h1 {
-            margin-top: 0;
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 10px;
         }
 
-        .login-box h1,
         .login-box p {
             text-align: center;
-        }
-
-        .login-box p {
             color: #666;
             margin-bottom: 25px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 7px;
@@ -68,9 +70,9 @@
         button {
             border: none;
             border-radius: 7px;
-            padding: 11px 16px;
-            font-size: 15px;
+            padding: 12px 18px;
             cursor: pointer;
+            font-size: 15px;
         }
 
         .login-button {
@@ -79,11 +81,17 @@
             color: white;
         }
 
-        #loginError {
-            color: #c62828;
-            text-align: center;
-            margin-top: 15px;
+        .login-button:hover {
+            background: #1557b0;
         }
+
+        .error {
+            color: #d93025;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* MAIN APP */
 
         #app {
             display: none;
@@ -91,13 +99,13 @@
 
         .header {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            padding: 18px 20px;
+            border-bottom: 1px solid #ddd;
         }
 
-        .header-top {
+        .header-content {
+            max-width: 900px;
+            margin: auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -106,12 +114,7 @@
 
         .header h1 {
             margin: 0;
-            font-size: 26px;
-        }
-
-        .header p {
-            margin: 6px 0 0;
-            color: #666;
+            font-size: 24px;
         }
 
         .header-buttons {
@@ -119,74 +122,75 @@
             gap: 8px;
         }
 
-        .change-password {
+        .change-password-button {
             background: #555;
             color: white;
         }
 
-        .logout {
-            background: #d32f2f;
+        .logout-button {
+            background: #d93025;
             color: white;
         }
 
-        .search-box {
-            margin-bottom: 20px;
+        .search {
+            margin: 20px 0;
+        }
+
+        .contacts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
         }
 
         .contact-card {
             background: white;
-            padding: 18px;
-            margin-bottom: 12px;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .contact-name {
-            font-size: 19px;
-            font-weight: bold;
-            margin-bottom: 8px;
+        .contact-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
         }
 
-        .contact-detail {
-            margin: 5px 0;
-            color: #555;
+        .contact-card p {
+            margin: 7px 0;
             word-break: break-word;
         }
 
-        .contact-actions {
+        .contact-card a {
+            color: #1f6feb;
+            text-decoration: none;
+        }
+
+        .contact-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         .call-button {
-            background: #2e7d32;
+            background: #198754;
             color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 7px;
+            flex: 1;
+            text-align: center;
         }
 
         .email-button {
-            background: #1565c0;
+            background: #1f6feb;
             color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 7px;
+            flex: 1;
+            text-align: center;
         }
 
-        #loading {
+        .loading {
             text-align: center;
             padding: 30px;
             color: #666;
         }
 
-        #noResults {
-            display: none;
-            text-align: center;
-            color: #666;
-            padding: 30px;
-        }
+        /* MODAL */
 
         .modal {
             display: none;
@@ -205,7 +209,11 @@
             max-width: 400px;
             margin: 100px auto;
             padding: 25px;
-            border-radius: 12px;
+            border-radius: 10px;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
         }
 
         .modal-buttons {
@@ -214,7 +222,7 @@
         }
 
         .save-password {
-            background: #1f6feb;
+            background: #198754;
             color: white;
             flex: 1;
         }
@@ -225,16 +233,9 @@
             flex: 1;
         }
 
-        #passwordMessage {
-            margin-top: 12px;
-        }
-
         @media (max-width: 600px) {
-            .container {
-                padding: 12px;
-            }
 
-            .header-top {
+            .header-content {
                 flex-direction: column;
                 align-items: stretch;
             }
@@ -248,16 +249,11 @@
             }
 
             .header h1 {
-                font-size: 22px;
-            }
-
-            .contact-actions {
-                flex-direction: column;
-            }
-
-            .call-button,
-            .email-button {
                 text-align: center;
+            }
+
+            .contacts {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -265,11 +261,15 @@
 
 <body>
 
+<!-- ========================= -->
+<!-- LOGIN SCREEN -->
+<!-- ========================= -->
+
 <div id="loginScreen">
 
     <div class="login-box">
 
-        <h1>Christchurchnz</h1>
+        <h1>CHRISTCH</h1>
 
         <p>Company Contacts</p>
 
@@ -287,74 +287,85 @@
             autocomplete="current-password"
         >
 
-        <button class="login-button" onclick="login()">
+        <button
+            class="login-button"
+            onclick="login()"
+        >
             Login
         </button>
 
-        <div id="loginError"></div>
+        <div id="loginError" class="error"></div>
 
     </div>
 
 </div>
 
 
+<!-- ========================= -->
+<!-- MAIN APPLICATION -->
+<!-- ========================= -->
+
 <div id="app">
 
-    <div class="container">
+    <div class="header">
 
-        <div class="header">
+        <div class="header-content">
 
-            <div class="header-top">
+            <h1>CHRISTCH - Company Contacts</h1>
 
-                <div>
-                    <h1>Christchurchnz- Company Contacts</h1>
-                    <p id="loggedInUser"></p>
-                </div>
+            <div class="header-buttons">
 
-                <div class="header-buttons">
+                <button
+                    class="change-password-button"
+                    onclick="openPasswordModal()"
+                >
+                    Change Password
+                </button>
 
-                    <button
-                        class="change-password"
-                        onclick="openPasswordModal()">
-                        Change Password
-                    </button>
-
-                    <button
-                        class="logout"
-                        onclick="logout()">
-                        Logout
-                    </button>
-
-                </div>
+                <button
+                    class="logout-button"
+                    onclick="logout()"
+                >
+                    Logout
+                </button>
 
             </div>
 
         </div>
 
-        <div class="search-box">
+    </div>
+
+
+    <div class="container">
+
+        <div class="search">
 
             <input
                 type="text"
-                id="search"
+                id="searchInput"
                 placeholder="Search contacts..."
-                oninput="searchContacts()">
+                oninput="searchContacts()"
+            >
 
         </div>
 
-        <div id="loading">
-            Loading contacts...
-        </div>
 
-        <div id="contacts"></div>
+        <div id="contactsList" class="contacts">
 
-        <div id="noResults">
-            No contacts found.
+            <div class="loading">
+                Loading contacts...
+            </div>
+
         </div>
 
     </div>
 
 </div>
 
+
+<!-- ========================= -->
+<!-- CHANGE PASSWORD MODAL -->
+<!-- ========================= -->
 
 <div id="passwordModal" class="modal">
 
@@ -366,31 +377,35 @@
             type="password"
             id="newPassword"
             placeholder="New password"
-            autocomplete="new-password">
+            autocomplete="new-password"
+        >
 
         <input
             type="password"
             id="confirmPassword"
             placeholder="Confirm new password"
-            autocomplete="new-password">
+            autocomplete="new-password"
+        >
+
+        <div id="passwordMessage" class="error"></div>
 
         <div class="modal-buttons">
 
             <button
                 class="save-password"
-                onclick="changePassword()">
-                Change Password
+                onclick="changePassword()"
+            >
+                Save Password
             </button>
 
             <button
                 class="cancel-button"
-                onclick="closePasswordModal()">
+                onclick="closePasswordModal()"
+            >
                 Cancel
             </button>
 
         </div>
-
-        <div id="passwordMessage"></div>
 
     </div>
 
@@ -399,370 +414,62 @@
 
 <script>
 
-const SUPABASE_URL =
-    "https://luhagrwwkpenxccffpwf.supabase.co";
+    /* ==========================================
+       SUPABASE CONFIGURATION
+       ========================================== */
 
-const SUPABASE_KEY =
-    "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
+    const SUPABASE_URL =
+        "https://luhagrwwkpenxccffpwf.supabase.co";
 
+    const SUPABASE_KEY =
+        "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
 
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
-let allContacts = [];
 
+    let contacts = [];
 
-async function checkLogin() {
 
-    const {
-        data: { session }
-    } = await supabaseClient.auth.getSession();
+    /* ==========================================
+       CHECK LOGIN
+       ========================================== */
 
-    if (session) {
-        showApp(session);
-    } else {
-        showLogin();
-    }
-}
+    async function checkLogin() {
 
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
 
-async function login() {
+        if (error) {
 
-    const email =
-        document.getElementById("email").value.trim();
+            console.error("Session error:", error);
 
-    const password =
-        document.getElementById("password").value;
+            return;
 
-    const errorElement =
-        document.getElementById("loginError");
-
-    errorElement.textContent = "";
-
-    if (!email || !password) {
-
-        errorElement.textContent =
-            "Please enter your email and password.";
-
-        return;
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-
-    if (error) {
-
-        errorElement.textContent =
-            error.message;
-
-        return;
-    }
-
-    showApp(data.session);
-}
-
-
-function showApp(session) {
-
-    document.getElementById("loginScreen").style.display =
-        "none";
-
-    document.getElementById("app").style.display =
-        "block";
-
-    document.getElementById("loggedInUser").textContent =
-        "Logged in as: " + session.user.email;
-
-    loadContacts();
-}
-
-
-function showLogin() {
-
-    document.getElementById("loginScreen").style.display =
-        "flex";
-
-    document.getElementById("app").style.display =
-        "none";
-}
-
-
-async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    allContacts = [];
-
-    document.getElementById("contacts").innerHTML = "";
-
-    showLogin();
-}
-
-
-async function loadContacts() {
-
-    const loading =
-        document.getElementById("loading");
-
-    const contactsDiv =
-        document.getElementById("contacts");
-
-    loading.style.display = "block";
-
-    contactsDiv.innerHTML = "";
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("contacts")
-        .select("*")
-        .order("name", { ascending: true });
-
-    loading.style.display = "none";
-
-    if (error) {
-
-        console.error(error);
-
-        contactsDiv.innerHTML =
-            "<p>Unable to load contacts. Please contact IT support.</p>";
-
-        return;
-    }
-
-    allContacts = data || [];
-
-    displayContacts(allContacts);
-}
-
-
-function displayContacts(contacts) {
-
-    const contactsDiv =
-        document.getElementById("contacts");
-
-    const noResults =
-        document.getElementById("noResults");
-
-    contactsDiv.innerHTML = "";
-
-    if (contacts.length === 0) {
-
-        noResults.style.display = "block";
-
-        return;
-    }
-
-    noResults.style.display = "none";
-
-    contacts.forEach(contact => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "contact-card";
-
-        const name =
-            escapeHtml(contact.name || "");
-
-        const phone =
-            escapeHtml(contact.phone || "");
-
-        const email =
-            escapeHtml(contact.email || "");
-
-        let phoneButton = "";
-
-        if (contact.phone) {
-
-            phoneButton = `
-                <a
-                    class="call-button"
-                    href="tel:${contact.phone}">
-                    📞 Call
-                </a>
-            `;
         }
 
-        let emailButton = "";
+        if (data.session) {
 
-        if (contact.email) {
+            showApp();
 
-            emailButton = `
-                <a
-                    class="email-button"
-                    href="mailto:${contact.email}">
-                    ✉ Email
-                </a>
-            `;
+            loadContacts();
+
+        } else {
+
+            showLogin();
+
         }
 
-        card.innerHTML = `
-
-            <div class="contact-name">
-                ${name}
-            </div>
-
-            <div class="contact-detail">
-                📞 ${phone || "No phone number"}
-            </div>
-
-            <div class="contact-detail">
-                ✉ ${email || "No email address"}
-            </div>
-
-            <div class="contact-actions">
-                ${phoneButton}
-                ${emailButton}
-            </div>
-
-        `;
-
-        contactsDiv.appendChild(card);
-
-    });
-}
-
-
-function searchContacts() {
-
-    const search =
-        document
-            .getElementById("search")
-            .value
-            .toLowerCase()
-            .trim();
-
-    if (!search) {
-
-        displayContacts(allContacts);
-
-        return;
     }
 
-    const filtered =
-        allContacts.filter(contact => {
 
-            const name =
-                (contact.name || "").toLowerCase();
-
-            const phone =
-                (contact.phone || "").toLowerCase();
-
-            const email =
-                (contact.email || "").toLowerCase();
-
-            return (
-                name.includes(search) ||
-                phone.includes(search) ||
-                email.includes(search)
-            );
-
-        });
-
-    displayContacts(filtered);
-}
-
-
-function openPasswordModal() {
-
-    document.getElementById("passwordModal").style.display =
-        "block";
-
-    document.getElementById("passwordMessage").textContent =
-        "";
-
-    document.getElementById("newPassword").value = "";
-
-    document.getElementById("confirmPassword").value = "";
-}
-
-
-function closePasswordModal() {
-
-    document.getElementById("passwordModal").style.display =
-        "none";
-}
-
-
-async function changePassword() {
-
-    const newPassword =
-        document.getElementById("newPassword").value;
-
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-    const message =
-        document.getElementById("passwordMessage");
-
-    message.textContent = "";
-
-    if (newPassword.length < 8) {
-
-        message.textContent =
-            "Password must be at least 8 characters.";
-
-        return;
-    }
-
-    if (newPassword !== confirmPassword) {
-
-        message.textContent =
-            "Passwords do not match.";
-
-        return;
-    }
-
-    const {
-        error
-    } = await supabaseClient.auth.updateUser({
-        password: newPassword
-    });
-
-    if (error) {
-
-        message.textContent =
-            error.message;
-
-        return;
-    }
-
-    message.textContent =
-        "Password changed successfully.";
-
-    setTimeout(() => {
-        closePasswordModal();
-    }, 1500);
-}
-
-
-function escapeHtml(value) {
-
-    return value
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-checkLogin();
-
-</script>
-
-</body>
-</html>
+    /* ==========================================
+       SHOW LOGIN
+       =============================
 ```
