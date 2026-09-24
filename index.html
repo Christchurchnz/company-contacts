@@ -6,7 +6,6 @@
 
     <title>CHRISTCH - Company Contacts</title>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -43,7 +42,7 @@
             max-width: 400px;
             padding: 35px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .login-box h1 {
@@ -90,7 +89,7 @@
             text-align: center;
         }
 
-        /* MAIN APP */
+        /* APP */
 
         #app {
             display: none;
@@ -145,7 +144,7 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .contact-card h3 {
@@ -171,16 +170,20 @@
 
         .call-button {
             background: #198754;
-            color: white;
+            color: white !important;
             flex: 1;
             text-align: center;
+            padding: 12px;
+            border-radius: 7px;
         }
 
         .email-button {
             background: #1f6feb;
-            color: white;
+            color: white !important;
             flex: 1;
             text-align: center;
+            padding: 12px;
+            border-radius: 7px;
         }
 
         .loading {
@@ -189,7 +192,7 @@
             color: #666;
         }
 
-        /* MODAL */
+        /* PASSWORD MODAL */
 
         .modal {
             display: none;
@@ -199,7 +202,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             padding: 20px;
         }
 
@@ -260,9 +263,9 @@
 
 <body>
 
-<!-- ========================= -->
-<!-- LOGIN SCREEN -->
-<!-- ========================= -->
+<!-- ============================= -->
+<!-- LOGIN -->
+<!-- ============================= -->
 
 <div id="loginScreen">
 
@@ -300,9 +303,9 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- MAIN APPLICATION -->
-<!-- ========================= -->
+<!-- ============================= -->
+<!-- MAIN APP -->
+<!-- ============================= -->
 
 <div id="app">
 
@@ -362,9 +365,9 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- CHANGE PASSWORD MODAL -->
-<!-- ========================= -->
+<!-- ============================= -->
+<!-- CHANGE PASSWORD -->
+<!-- ============================= -->
 
 <div id="passwordModal" class="modal">
 
@@ -414,7 +417,7 @@
 <script>
 
     /* ==========================================
-       SUPABASE CONFIGURATION
+       SUPABASE CONNECTION
        ========================================== */
 
     const SUPABASE_URL =
@@ -445,6 +448,7 @@
             error
         } = await supabaseClient.auth.getSession();
 
+
         if (error) {
 
             console.error("Session error:", error);
@@ -453,11 +457,12 @@
 
         }
 
+
         if (data.session) {
 
             showApp();
 
-            loadContacts();
+            await loadContacts();
 
         } else {
 
@@ -474,22 +479,26 @@
 
     function showLogin() {
 
-        document.getElementById("loginScreen").style.display = "flex";
+        document.getElementById("loginScreen").style.display =
+            "flex";
 
-        document.getElementById("app").style.display = "none";
+        document.getElementById("app").style.display =
+            "none";
 
     }
 
 
     /* ==========================================
-       SHOW APPLICATION
+       SHOW APP
        ========================================== */
 
     function showApp() {
 
-        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("loginScreen").style.display =
+            "none";
 
-        document.getElementById("app").style.display = "block";
+        document.getElementById("app").style.display =
+            "block";
 
     }
 
@@ -508,6 +517,7 @@
 
         const errorBox =
             document.getElementById("loginError");
+
 
         errorBox.textContent = "";
 
@@ -550,7 +560,7 @@
 
             showApp();
 
-            loadContacts();
+            await loadContacts();
 
         }
 
@@ -576,8 +586,8 @@
             error
         } = await supabaseClient
             .from("Contacts")
-            .select("id, created_at, Name, Phone, Email")
-            .order("Name", {
+            .select("id, created_at, name, phone, email")
+            .order("name", {
                 ascending: true
             });
 
@@ -589,11 +599,14 @@
                 error
             );
 
-            contactsList.innerHTML =
-                `<div class="loading" style="color:red;">
-                    Unable to load contacts.<br><br>
+
+            contactsList.innerHTML = `
+                <div class="loading" style="color:red;">
+                    <strong>Unable to load contacts.</strong>
+                    <br><br>
                     ${escapeHtml(error.message)}
-                </div>`;
+                </div>
+            `;
 
             return;
 
@@ -631,13 +644,13 @@
             contactArray.map(contact => {
 
                 const name =
-                    contact.Name || "";
+                    contact.name || "";
 
                 const phone =
-                    contact.Phone || "";
+                    contact.phone || "";
 
                 const email =
-                    contact.Email || "";
+                    contact.email || "";
 
 
                 const safeName =
@@ -682,14 +695,14 @@
                                 class="call-button"
                                 href="tel:${phoneLink}"
                             >
-                                Call
+                                📞 Call
                             </a>
 
                             <a
                                 class="email-button"
                                 href="mailto:${safeEmail}"
                             >
-                                Email
+                                ✉ Email
                             </a>
 
                         </div>
@@ -704,7 +717,7 @@
 
 
     /* ==========================================
-       SEARCH CONTACTS
+       SEARCH
        ========================================== */
 
     function searchContacts() {
@@ -730,15 +743,15 @@
             contacts.filter(contact => {
 
                 const name =
-                    String(contact.Name || "")
+                    String(contact.name || "")
                         .toLowerCase();
 
                 const phone =
-                    String(contact.Phone || "")
+                    String(contact.phone || "")
                         .toLowerCase();
 
                 const email =
-                    String(contact.Email || "")
+                    String(contact.email || "")
                         .toLowerCase();
 
 
@@ -757,7 +770,7 @@
 
 
     /* ==========================================
-       CHANGE PASSWORD - OPEN
+       OPEN PASSWORD MODAL
        ========================================== */
 
     function openPasswordModal() {
@@ -776,7 +789,7 @@
 
 
     /* ==========================================
-       CHANGE PASSWORD - CLOSE
+       CLOSE PASSWORD MODAL
        ========================================== */
 
     function closePasswordModal() {
@@ -887,7 +900,8 @@
 
         contacts = [];
 
-        document.getElementById("contactsList").innerHTML = "";
+        document.getElementById("contactsList").innerHTML =
+            "";
 
         showLogin();
 
@@ -911,7 +925,7 @@
 
 
     /* ==========================================
-       START APPLICATION
+       START
        ========================================== */
 
     checkLogin();
@@ -920,4 +934,3 @@
 
 </body>
 </html>
-```
