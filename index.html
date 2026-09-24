@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CHRISTCH - Company Contacts</title>
+    <title>ChristchurchNZ - Company Contacts</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -271,7 +271,7 @@
 
     <div class="login-box">
 
-        <h1>CHRISTCH</h1>
+        <h1>ChristchurchNZ</h1>
 
         <p>Company Contacts</p>
 
@@ -313,7 +313,7 @@
 
         <div class="header-content">
 
-            <h1>CHRISTCH - Company Contacts</h1>
+            <h1>ChristchurchNZ - Company Contacts</h1>
 
             <div class="header-buttons">
 
@@ -426,13 +426,11 @@
     const SUPABASE_KEY =
         "sb_publishable_P7O84PfAUNSBXRfhPoyApQ_6b0S4nhh";
 
-
     const supabaseClient =
         window.supabase.createClient(
             SUPABASE_URL,
             SUPABASE_KEY
         );
-
 
     let contacts = [];
 
@@ -448,7 +446,6 @@
             error
         } = await supabaseClient.auth.getSession();
 
-
         if (error) {
 
             console.error("Session error:", error);
@@ -456,7 +453,6 @@
             return;
 
         }
-
 
         if (data.session) {
 
@@ -518,9 +514,7 @@
         const errorBox =
             document.getElementById("loginError");
 
-
         errorBox.textContent = "";
-
 
         if (!email || !password) {
 
@@ -530,7 +524,6 @@
             return;
 
         }
-
 
         const {
             data,
@@ -543,7 +536,6 @@
 
         });
 
-
         if (error) {
 
             console.error("Login error:", error);
@@ -554,7 +546,6 @@
             return;
 
         }
-
 
         if (data.session) {
 
@@ -576,10 +567,8 @@
         const contactsList =
             document.getElementById("contactsList");
 
-
         contactsList.innerHTML =
             '<div class="loading">Loading contacts...</div>';
-
 
         const {
             data,
@@ -591,14 +580,12 @@
                 ascending: true
             });
 
-
         if (error) {
 
             console.error(
                 "CONTACT LOAD ERROR:",
                 error
             );
-
 
             contactsList.innerHTML = `
                 <div class="loading" style="color:red;">
@@ -611,7 +598,6 @@
             return;
 
         }
-
 
         contacts = data || [];
 
@@ -629,7 +615,6 @@
         const contactsList =
             document.getElementById("contactsList");
 
-
         if (!contactArray.length) {
 
             contactsList.innerHTML =
@@ -638,7 +623,6 @@
             return;
 
         }
-
 
         contactsList.innerHTML =
             contactArray.map(contact => {
@@ -652,7 +636,6 @@
                 const email =
                     contact.email || "";
 
-
                 const safeName =
                     escapeHtml(name);
 
@@ -662,10 +645,8 @@
                 const safeEmail =
                     escapeHtml(email);
 
-
                 const phoneLink =
                     phone.replace(/[^0-9+]/g, "");
-
 
                 return `
 
@@ -729,7 +710,6 @@
                 .toLowerCase()
                 .trim();
 
-
         if (!search) {
 
             displayContacts(contacts);
@@ -737,7 +717,6 @@
             return;
 
         }
-
 
         const filtered =
             contacts.filter(contact => {
@@ -754,7 +733,6 @@
                     String(contact.email || "")
                         .toLowerCase();
 
-
                 return (
                     name.includes(search) ||
                     phone.includes(search) ||
@@ -762,7 +740,6 @@
                 );
 
             });
-
 
         displayContacts(filtered);
 
@@ -815,11 +792,9 @@
         const message =
             document.getElementById("passwordMessage");
 
-
         message.style.color = "#d93025";
 
         message.textContent = "";
-
 
         if (!newPassword || !confirmPassword) {
 
@@ -830,7 +805,6 @@
 
         }
 
-
         if (newPassword.length < 6) {
 
             message.textContent =
@@ -839,7 +813,6 @@
             return;
 
         }
-
 
         if (newPassword !== confirmPassword) {
 
@@ -850,7 +823,6 @@
 
         }
 
-
         const {
             error
         } = await supabaseClient.auth.updateUser({
@@ -858,7 +830,6 @@
             password: newPassword
 
         });
-
 
         if (error) {
 
@@ -874,12 +845,10 @@
 
         }
 
-
         message.style.color = "#198754";
 
         message.textContent =
             "Password changed successfully.";
-
 
         setTimeout(() => {
 
